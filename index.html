@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Adel Gastel">
+<meta name="description" content="Cette fleur est pour toi — offrir une fleur et un mot à quelqu'un qui compte.">
+<title>Cette fleur est pour toi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#fdf9f4;
+  --ink:#1a1a2e;
+  --muted:#888;
+  --faint:#ccc;
+  --line:#f0e8e0;
+  --leaf:#7a9e7e;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--cream);
+  font-family:'DM Sans',sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:1.6rem;
+  transition:background .5s ease;
+}
+body.dark{background:var(--ink)}
+
+.view{width:100%;max-width:360px;text-align:center;animation:fade .55s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---- carte fleur ---- */
+.card{
+  background:#fff;border-radius:24px;border:1px solid var(--line);
+  padding:2.5rem 2rem;max-width:320px;width:100%;margin:0 auto;
+  text-align:center;box-shadow:0 4px 32px rgba(0,0,0,.04);
+}
+.fleur-nom{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:.5rem}
+.fleur-titre{font-family:'Playfair Display',Georgia,serif;font-size:1.8rem;color:var(--ink);margin:0 0 1.6rem}
+.fleur-svg{margin:0 auto 2rem;min-height:180px;display:flex;align-items:center;justify-content:center}
+.fleur-texte{font-size:14px;color:var(--muted);line-height:1.9;font-weight:300}
+.fleur-texte em{color:var(--ink);font-style:normal;font-weight:500}
+
+.pour{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:1rem}
+.de{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:.95rem;color:var(--faint);margin-top:1.5rem}
+
+/* ---- écrans texte ---- */
+.h-title{font-family:'Playfair Display',Georgia,serif;font-size:2rem;line-height:1.2;margin:0 0 1rem}
+.h-sub{font-size:14px;color:var(--muted);line-height:1.7;font-weight:300;margin:0 auto 2rem;max-width:280px}
+body.dark .h-title{color:var(--cream)}
+body.dark .h-sub{color:#b9b9c8}
+
+/* ---- boutons ---- */
+.btn{
+  display:inline-block;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;letter-spacing:.02em;
+  padding:.85rem 1.7rem;border-radius:999px;
+  background:var(--ink);color:var(--cream);
+  transition:opacity .2s,transform .15s;
+}
+.btn:hover{opacity:.88}
+.btn:active{transform:scale(.98)}
+body.dark .btn{background:var(--cream);color:var(--ink)}
+.ghost{background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;
+  font-size:13px;color:var(--muted);text-decoration:underline;text-underline-offset:3px;padding:.4rem}
+body.dark .ghost{color:#9a9ab0}
+.actions{margin-top:1.8rem;display:flex;flex-direction:column;gap:.5rem;align-items:center}
+
+/* ---- choisir ---- */
+.field{margin:0 0 1rem;text-align:left}
+.field label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:.4rem}
+.field input{width:100%;border:1px solid var(--line);border-radius:12px;padding:.7rem .9rem;
+  font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);background:#fff;outline:none;transition:border-color .2s}
+.field input:focus{border-color:#d4b8c4}
+.flower-list{max-height:42vh;overflow-y:auto;border:1px solid var(--line);border-radius:16px;background:#fff;margin-bottom:1.2rem;text-align:left}
+.flower-item{padding:.7rem 1rem;cursor:pointer;border-bottom:1px solid #f7f1ea;transition:background .15s}
+.flower-item:last-child{border-bottom:none}
+.flower-item:hover{background:#fdf6f0}
+.flower-item.sel{background:#f4e8df}
+.fi-name{font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:var(--ink)}
+.fi-q{font-size:11px;color:var(--faint);font-weight:300}
+
+/* ---- lien ---- */
+.linkbox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:.8rem .9rem;
+  font-size:12px;color:var(--muted);word-break:break-all;text-align:left;margin-bottom:.4rem;line-height:1.5}
+.toast{font-size:12px;color:var(--leaf);height:1.1em;margin-top:.4rem;transition:opacity .3s}
+.hint{font-size:12px;color:#c98a8a;height:1em;margin-top:.4rem}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+/* ===================== Données ===================== */
+const PLACEHOLDER_SVG = `<svg width="120" height="180" viewBox="0 0 120 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M60 176 C60 176 60 120 60 92" stroke="#7a9e7e" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M60 145 C50 135 32 130 30 117 C42 120 56 130 60 140Z" fill="#9ab89e" stroke="#7a9e7e" stroke-width="1"/>
+  <path d="M60 132 C70 122 88 119 90 106 C78 109 64 119 60 128Z" fill="#9ab89e" stroke="#7a9e7e" stroke-width="1"/>
+  <g transform="translate(60,64)">
+    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1"/>
+    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(60)"/>
+    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(120)"/>
+    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(240)"/>
+    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(300)"/>
+    <circle r="9" fill="#f7d27f" stroke="#e0b85c" stroke-width="1"/>
+  </g>
+</svg>`;
+
+const TULIPE_SVG = `<svg width="120" height="180" viewBox="0 0 120 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M60 175 C60 175 60 120 60 100" stroke="#7a9e7e" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M60 140 C50 130 30 125 28 112 C40 115 55 125 60 135" fill="#9ab89e" stroke="#7a9e7e" stroke-width="1"/>
+  <path d="M60 128 C70 118 90 115 93 102 C81 106 66 116 60 126" fill="#9ab89e" stroke="#7a9e7e" stroke-width="1"/>
+  <path d="M60 100 C48 95 38 80 40 62 C44 50 52 44 60 44 C60 44 58 72 60 100Z" fill="#e8a0b0" stroke="#d4788a" stroke-width="1"/>
+  <path d="M60 100 C72 95 82 80 80 62 C76 50 68 44 60 44 C60 44 62 72 60 100Z" fill="#e8a0b0" stroke="#d4788a" stroke-width="1"/>
+  <path d="M60 100 C55 85 54 65 60 44 C66 65 65 85 60 100Z" fill="#f0b8c4" stroke="#d4788a" stroke-width=".8"/>
+  <path d="M60 100 C44 92 34 72 38 52 C42 38 52 32 60 34 C60 34 56 68 60 100Z" fill="#f2c0cc" stroke="#d4788a" stroke-width="1"/>
+  <path d="M60 100 C76 92 86 72 82 52 C78 38 68 32 60 34 C60 34 64 68 60 100Z" fill="#f2c0cc" stroke="#d4788a" stroke-width="1"/>
+  <path d="M60 100 C54 82 52 58 60 34 C68 58 66 82 60 100Z" fill="#fad4dc" stroke="#d4788a" stroke-width=".8"/>
+  <line x1="60" y1="80" x2="54" y2="65" stroke="#c06070" stroke-width="1" stroke-linecap="round"/>
+  <line x1="60" y1="80" x2="60" y2="63" stroke="#c06070" stroke-width="1" stroke-linecap="round"/>
+  <line x1="60" y1="80" x2="66" y2="65" stroke="#c06070" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="54" cy="64" r="2" fill="#8b3a4a"/>
+  <circle cx="60" cy="62" r="2" fill="#8b3a4a"/>
+  <circle cx="66" cy="64" r="2" fill="#8b3a4a"/>
+</svg>`;
+
+const FLOWERS = [
+  {slug:"tulipe",nom:"La Tulipe",qualite:"la droiture tranquille",svg:TULIPE_SVG,poeme:`La tulipe ne s'excuse pas de sa droiture.<br>Elle pousse <em>exactement</em> comme elle l'a décidé —<br>ni tordue par le vent, ni courbée par le regard.<br><br>Il y a dans sa façon d'être une <em>élégance tranquille</em>,<br>celle de quelqu'un qui sait qui il est<br>et n'a pas besoin de le prouver.`},
+  {slug:"rose",nom:"La Rose",qualite:"la générosité qui s'ignore",poeme:`La rose se donne entière,<br>son parfum part avant qu'elle l'ait décidé.<br>Elle ignore qu'elle est un cadeau — c'est ce qui la rend précieuse.<br><br>Il y a une <em>générosité</em> qui ne se sait pas,<br>celle de qui offre le meilleur<br>sans jamais penser à <em>tendre la main en retour</em>.`},
+  {slug:"pivoine",nom:"La Pivoine",qualite:"l'abondance sans ostentation",poeme:`La pivoine est pleine à déborder de pétales,<br>une abondance qu'elle porte sans en faire un drame.<br>Tant de richesse, et pas un geste pour l'exhiber.<br><br>Elle a beaucoup, et le <em>pose là, simplement</em> —<br>car ce qui est vraiment plein<br>n'a <em>pas besoin de paraître</em>.`},
+  {slug:"iris",nom:"L'Iris",qualite:"la lucidité",poeme:`L'iris dresse ses pétales comme on ouvre les yeux.<br>Rien ne lui échappe, ni la lumière ni l'ombre —<br>il regarde le monde sans ciller.<br><br>C'est la <em>lucidité</em> :<br>voir les choses exactement telles qu'elles sont<br>et les <em>aimer quand même</em>.`},
+  {slug:"lavande",nom:"La Lavande",qualite:"la constance discrète",poeme:`La lavande garde son parfum même séchée,<br>longtemps après que l'été l'a oubliée.<br>Elle ne crie jamais, elle reste — voilà tout.<br><br>Il y a une <em>constance</em> qui ne fait pas de bruit,<br>celle de qui est toujours là<br>sans avoir besoin qu'on le <em>remarque</em>.`},
+  {slug:"tournesol",nom:"Le Tournesol",qualite:"la fidélité à la lumière",poeme:`Le tournesol tourne la tête tout le jour<br>pour ne pas perdre le soleil des yeux.<br>Et quand la nuit tombe, il attend — il sait qu'il reviendra.<br><br>C'est une <em>fidélité</em> entière,<br>celle de qui choisit une lumière<br>et lui reste <em>tourné, même dans le noir</em>.`},
+  {slug:"coquelicot",nom:"Le Coquelicot",qualite:"la fragilité courageuse",poeme:`Le coquelicot tient à un fil,<br>ses pétales sont du papier que le vent menace.<br>Pourtant il choisit de pousser <em>en plein champ</em>, là où rien ne le protège.<br><br>C'est un <em>courage</em> qui n'a pas l'air d'en être un :<br>être fragile, le savoir,<br>et s'exposer <em>tout de même</em>.`},
+  {slug:"jasmin",nom:"Le Jasmin",qualite:"la douceur qui s'infiltre partout",poeme:`Le jasmin n'entre jamais par la porte.<br>Son parfum passe sous les volets, traverse les murs,<br>et te trouve avant que tu l'aies cherché.<br><br>Il y a une <em>douceur</em> qui ne s'impose pas,<br>celle qui se glisse sans frapper<br>et qu'on garde <em>longtemps après son départ</em>.`},
+  {slug:"magnolia",nom:"Le Magnolia",qualite:"la dignité ancienne",poeme:`Le magnolia fleurissait déjà<br>quand les abeilles n'existaient pas encore.<br>Il a traversé les âges sans rien changer de sa tenue.<br><br>Une <em>dignité</em> ne s'agite pas.<br>Elle a déjà tout vu,<br>et ça lui suffit pour <em>se tenir droite</em>.`},
+  {slug:"lilas",nom:"Le Lilas",qualite:"la nostalgie joyeuse",poeme:`Le lilas ne dure que quelques jours,<br>et son parfum ramène d'un coup toute une enfance.<br>On le respire en sachant déjà qu'il va partir.<br><br>Tu peux sourire d'une chose <em>parce qu'elle fut</em>,<br>sans regretter qu'elle finisse —<br>c'est ça, sa <em>nostalgie joyeuse</em>.`},
+  {slug:"anemone",nom:"L'Anémone",qualite:"la résistance légère",poeme:`L'anémone tremble au moindre souffle,<br>ses pétales semblent prêts à céder.<br>Pourtant le vent passe, et elle est toujours là.<br><br>Il y a une <em>résistance</em> qui n'a pas l'air dure,<br>celle de qui plie sans rompre<br>et <em>tient justement parce qu'il sait ployer</em>.`},
+  {slug:"fritillaire",nom:"La Fritillaire",qualite:"la complexité assumée",poeme:`La fritillaire porte un damier sur ses pétales,<br>un motif que personne ne lui a demandé.<br>Elle est étrange, et ne fait rien pour l'être moins.<br><br>C'est une <em>complexité</em> qui ne s'excuse pas,<br>celle de qui est compliqué<br>et <em>n'attend de personne qu'il soit simplifié</em>.`},
+  {slug:"hemerocalle",nom:"L'Hémérocalle",qualite:"l'intensité du moment présent",poeme:`Chaque fleur de l'hémérocalle ne vit qu'un jour.<br>Une seule aube, un seul soir — puis une autre prend sa place.<br>Elle ne garde rien, elle donne tout d'un coup.<br><br>Puisque c'est court, autant que ce soit <em>entier</em>.<br>Elle ne remet pas à demain<br>ce qui ne peut être beau <em>qu'aujourd'hui</em>.`},
+  {slug:"nigelle",nom:"La Nigelle",qualite:"le mystère accessible",poeme:`La nigelle se cache derrière un voile de feuilles,<br>comme une fleur qu'on devine avant de la voir.<br>Elle est un secret — mais un secret qui se laisse approcher.<br><br>Peut-on garder une part d'ombre<br>sans jamais <em>fermer la porte</em> ?<br>Elle, oui. C'est tout son <em>mystère</em>.`},
+  {slug:"scabieuse",nom:"La Scabieuse",qualite:"l'humilité rayonnante",poeme:`La scabieuse ne se prend pas pour une reine,<br>et pourtant les abeilles ne vont qu'à elle.<br>Elle attire sans avoir cherché à briller.<br><br>C'est une <em>humilité</em> qui rayonne quand même,<br>celle de qui se croit ordinaire<br>et qu'on <em>cherche pourtant des yeux</em>.`},
+  {slug:"digitale",nom:"La Digitale",qualite:"la beauté qui impose le respect",poeme:`La digitale dresse ses clochettes vers le ciel,<br>magnifique, et l'on sait qu'il ne faut pas y toucher.<br>Sa beauté tient à distance autant qu'elle attire.<br><br>Il y a des <em>beautés</em> qui ne demandent rien<br>et obtiennent tout :<br>le <em>respect</em> vient avant l'envie.`},
+  {slug:"lupins",nom:"Les Lupins",qualite:"l'élan collectif",poeme:`Les lupins ne poussent jamais seuls.<br>Ils montent ensemble, en colonnes serrées,<br>et nourrissent la terre pour ceux qui viendront après.<br><br>C'est un <em>élan</em> qui ne pense pas qu'à soi,<br>celui de qui avance en groupe<br>et <em>laisse le sol meilleur qu'il l'a trouvé</em>.`},
+  {slug:"centauree",nom:"La Centaurée",qualite:"la générosité sauvage",poeme:`La centaurée pousse où on ne l'a pas semée,<br>au bord des champs, dans le blé, sans permission.<br>Elle offre son bleu à qui passe, gratuitement.<br><br>La plus belle <em>générosité</em> ne se cultive pas :<br>elle arrive sans qu'on l'ait demandée,<br><em>partout où on ne l'attendait pas</em>.`},
+  {slug:"camomille",nom:"La Camomille",qualite:"la sagesse ordinaire",poeme:`La camomille ne paie pas de mine,<br>une petite fleur de bord de chemin.<br>Pourtant c'est elle qu'on infuse quand le soir va mal.<br><br>C'est une <em>sagesse</em> sans grands mots,<br>celle de qui apaise simplement<br>et <em>sait que l'essentiel est petit</em>.`},
+  {slug:"achillee",nom:"L'Achillée",qualite:"la guérison silencieuse",poeme:`L'achillée soigne les plaies depuis Achille,<br>sans qu'on sache jamais comment elle fait.<br>Elle referme ce qui saigne, en silence.<br><br>Certains réparent les autres<br>sans jamais <em>réclamer d'être nommés</em> —<br>c'est leur façon de <em>guérir</em>.`},
+  {slug:"bourrache",nom:"La Bourrache",qualite:"le courage joyeux",poeme:`La bourrache portait courage aux soldats d'autrefois,<br>mêlé à un peu de joie, dans le même verre.<br>Ses étoiles bleues n'ont jamais su être tristes.<br><br>C'est un <em>courage</em> qui sourit,<br>celui de qui affronte les choses<br>sans se <em>départir de sa bonne humeur</em>.`},
+  {slug:"epilobe",nom:"L'Épilobe",qualite:"la renaissance après le feu",poeme:`L'épilobe est la première à revenir<br>là où le feu a tout pris.<br>Sur la cendre encore tiède, elle dresse son rose.<br><br>On peut repartir d'un sol brûlé.<br>Mieux : on peut faire du désastre<br><em>un commencement</em>.`},
+  {slug:"veratre",nom:"Le Vératre",qualite:"la force brute apprivoisée",poeme:`Le vératre est puissant et dangereux,<br>une force que la montagne respecte.<br>Mais il reste à sa place, sans jamais déborder.<br><br>C'est une <em>force</em> qui se tient,<br>celle de qui pourrait beaucoup<br>et <em>choisit la mesure</em>.`},
+  {slug:"arnica",nom:"L'Arnica",qualite:"la tendresse qui soigne",poeme:`L'arnica se pose sur les bleus de la peau,<br>sur les chocs qu'on ne voit pas toujours.<br>Elle ne pose pas de questions, elle apaise.<br><br>La vraie <em>tendresse</em> sait où poser la main<br>sans qu'on ait besoin<br><em>d'expliquer où ça fait mal</em>.`},
+  {slug:"gentiane",nom:"La Gentiane",qualite:"la profondeur bleue",poeme:`La gentiane est d'un bleu qu'on ne trouve nulle part ailleurs,<br>un bleu qui semble venir de très loin sous la terre.<br>Elle pousse haut, et plonge profond.<br><br>C'est une <em>profondeur</em> qui ne se montre pas toute,<br>celle de qui a des racines plus longues<br>que <em>ce qu'on en voit</em>.`},
+  {slug:"edelweiss",nom:"L'Edelweiss",qualite:"la pureté dans l'effort",poeme:`L'edelweiss ne pousse que là où c'est difficile,<br>sur la roche, dans le froid, là où peu montent.<br>Sa blancheur est le prix de la hauteur.<br><br>Certaines <em>puretés</em> ne se trouvent pas en bas.<br>Il faut monter les chercher —<br>et c'est la <em>montée</em> qui les rend pures.`},
+  {slug:"passiflore",nom:"La Passiflore",qualite:"la complexité harmonieuse",poeme:`La passiflore est une horloge de pétales,<br>mille pièces emboîtées sans une fausse note.<br>On dirait un calcul qui aurait choisi d'être beau.<br><br>C'est une <em>complexité</em> qui ne s'emmêle pas,<br>celle de qui contient mille choses<br>et les tient <em>toutes en accord</em>.`},
+  {slug:"clematite",nom:"La Clématite",qualite:"la liberté grimpante",poeme:`La clématite grimpe sur tout ce qu'elle trouve,<br>un mur, un arbre, une vieille barrière —<br>elle ne demande pas la permission de monter.<br><br>La <em>liberté</em> ne réclame pas un chemin tout tracé.<br>Elle s'appuie où elle peut<br>et <em>invente la suite</em>.`},
+  {slug:"glycine",nom:"La Glycine",qualite:"la patience récompensée",poeme:`La glycine peut attendre des années<br>avant de consentir à sa première fleur.<br>Puis un printemps, d'un coup, elle couvre tout.<br><br>C'est une <em>patience</em> qui finit par payer,<br>celle de qui prend le temps qu'il faut<br>et fleurit <em>quand elle est prête</em>.`},
+  {slug:"capucine",nom:"La Capucine",qualite:"la générosité flamboyante",poeme:`La capucine déborde de partout,<br>elle envahit en orange et en rouge,<br>et jusqu'à ses feuilles se mangent — rien ne se garde.<br><br>Donner discrètement, très bien.<br>Mais elle, elle donne <em>en couleurs vives</em><br>et <em>tout entière</em>.`},
+  {slug:"cosmos",nom:"Le Cosmos",qualite:"la légèreté organisée",poeme:`Le cosmos a l'air d'un désordre de pétales au vent,<br>léger, presque négligé.<br>Mais son nom veut dire l'ordre du monde — et il le sait.<br><br>C'est une <em>légèreté</em> qui n'est pas du hasard,<br>celle de qui semble flotter<br>et tient pourtant <em>un équilibre secret</em>.`},
+  {slug:"zinnia",nom:"Le Zinnia",qualite:"la fidélité vive",poeme:`Le zinnia fleurit tout l'été sans faiblir,<br>et plus on le coupe, plus il revient.<br>Sa couleur ne se fatigue jamais.<br><br>Il est des <em>fidélités</em> qui ne s'épuisent pas :<br>elles reviennent toujours,<br>plus <em>vivantes d'avoir donné</em>.`},
+  {slug:"nemesia",nom:"La Némésie",qualite:"la joie discrète",poeme:`La némésie fait de toutes petites fleurs,<br>qu'on remarque à peine de loin.<br>Mais de près, chacune sourit.<br><br>C'est une <em>joie</em> qui ne réclame pas la scène,<br>celle de qui est heureux sans le dire fort<br>et qu'on découvre <em>en se penchant</em>.`},
+  {slug:"phlox",nom:"Le Phlox",qualite:"la chaleur collective",poeme:`Le phlox ne fleurit jamais une fleur à la fois,<br>mais par grappes serrées, épaule contre épaule.<br>Sa couleur tient de la foule, pas du soliste.<br><br>La <em>chaleur</em> vient rarement d'un seul.<br>Elle naît du nombre,<br>de tout ce qui se tient <em>ensemble</em>.`},
+  {slug:"gaillardia",nom:"La Gaillarde",qualite:"l'audace assumée",poeme:`La gaillarde porte du rouge et du jaune ensemble,<br>des couleurs qu'on n'oserait pas marier.<br>Elle s'en moque — elle trouve ça très bien.<br><br>C'est une <em>audace</em> qui ne se demande pas si c'est permis,<br>celle de qui ose le trop<br>et <em>l'assume jusqu'au bout</em>.`},
+  {slug:"agapanthe",nom:"L'Agapanthe",qualite:"la noblesse populaire",poeme:`L'agapanthe dresse une couronne bleue<br>au bout d'une tige droite comme un sceptre.<br>Et pourtant elle pousse dans tous les jardins.<br><br>On peut avoir de l'allure<br>sans château ni distance :<br>une <em>noblesse</em> reste belle quand elle reste <em>à portée de tous</em>.`},
+  {slug:"echinacea",nom:"L'Échinacée",qualite:"la robustesse douce",poeme:`L'échinacée tient debout dans la prairie,<br>solide sur sa tige, dure au cœur,<br>mais ses pétales retombent en douceur autour.<br><br>C'est une <em>robustesse</em> qui n'est pas raide,<br>celle de qui est fort<br>et le reste <em>sans cesser d'être tendre</em>.`},
+  {slug:"knautia",nom:"La Knautie",qualite:"l'élégance sauvage",poeme:`La knautie balance ses boutons pourpres<br>au bout de tiges fines, dans le désordre des prés.<br>Personne ne l'a peignée — c'est ça qui est beau.<br><br>La plus vraie <em>élégance</em> ne s'apprend pas.<br>Elle pousse comme elle veut,<br><em>sans y avoir travaillé</em>.`},
+  {slug:"silene",nom:"Le Silène",qualite:"la ténacité fragile",poeme:`Le silène a l'air d'un rien,<br>des fleurs fines posées sur des tiges grêles.<br>Mais il s'accroche où d'autres renoncent.<br><br>C'est une <em>ténacité</em> qui ne paie pas de mine,<br>celle de qui semble fragile<br>et <em>tient bien plus longtemps qu'on ne croyait</em>.`},
+  {slug:"lychnis",nom:"Le Lychnis",qualite:"la passion contenue",poeme:`Le lychnis porte un rose presque brûlant<br>sur des feuilles couleur de cendre.<br>Le feu est là, posé sur quelque chose de calme.<br><br>La plus forte <em>passion</em> ne s'emballe pas.<br>Elle brûle au-dedans<br>et garde au-dehors <em>un air tranquille</em>.`},
+  {slug:"veronique",nom:"La Véronique",qualite:"la fidélité bleue",poeme:`La véronique dresse ses épis bleus<br>à la même place, chaque année, sans manquer.<br>On peut compter sur elle comme sur un rendez-vous.<br><br>C'est une <em>fidélité</em> qu'on n'a pas à vérifier,<br>celle de qui revient toujours<br>exactement <em>là où on l'attend</em>.`},
+  {slug:"sauge",nom:"La Sauge",qualite:"la sagesse active",poeme:`La sauge ne médite pas dans son coin,<br>son nom veut dire « guérir », et elle s'y emploie.<br>Elle parfume, elle soigne, elle sert.<br><br>Savoir ne suffit pas.<br>La vraie <em>sagesse</em> retrousse ses manches<br>et <em>en fait quelque chose</em>.`},
+  {slug:"monarde",nom:"La Monarde",qualite:"l'originalité assumée",poeme:`La monarde a une tête ébouriffée,<br>des pétales en bataille qui ne ressemblent à rien d'autre.<br>Elle n'a pas cherché à être comme les autres fleurs.<br><br>C'est une <em>originalité</em> qui ne se déguise pas,<br>celle de qui est différent<br>et <em>ne s'en cache même pas</em>.`},
+  {slug:"rudbeckia",nom:"Le Rudbeckia",qualite:"l'optimisme solide",poeme:`Le rudbeckia est tout jaune, comme un petit soleil,<br>mais c'est un soleil qui tient jusqu'aux gelées.<br>Sa gaieté n'est pas fragile — elle dure.<br><br>Le vrai <em>optimisme</em> voit le bon côté<br>sans jamais <em>se mentir sur l'hiver qui vient</em>.<br>Il sourit les yeux ouverts.`},
+  {slug:"penstemon",nom:"Le Penstemon",qualite:"la grâce athlétique",poeme:`Le penstemon dresse ses clochettes en rangs,<br>sur des tiges droites et nerveuses.<br>Il est élégant comme on est en forme — sans raideur.<br><br>C'est une <em>grâce</em> qui vient de la force,<br>celle de qui est beau parce qu'il est solide,<br>et <em>léger parce qu'il est puissant</em>.`},
+  {slug:"thalictrum",nom:"Le Pigamon",qualite:"la légèreté structurée",poeme:`Le pigamon flotte comme un nuage de fleurs minuscules,<br>si léger qu'on dirait qu'il va s'envoler.<br>Mais sous le nuage, une charpente fine tient tout.<br><br>Toute <em>légèreté</em> n'est pas du vide.<br>La plus aérienne tient debout<br><em>sur une vraie structure</em>.`},
+  {slug:"linaire",nom:"La Linaire",qualite:"la discrétion élégante",poeme:`La linaire fait de minuscules gueules-de-loup,<br>tout en haut de tiges fines, presque sans qu'on la voie.<br>Elle est raffinée, mais ne le réclame pas.<br><br>C'est une <em>discrétion</em> qui a du goût,<br>celle de qui pourrait se faire voir<br>et <em>préfère ne pas</em>.`},
+  {slug:"astrantia",nom:"L'Astrance",qualite:"la générosité étoilée",poeme:`L'astrance n'est pas une fleur mais une centaine,<br>de minuscules étoiles serrées dans une collerette.<br>Elle donne en multitude, jamais en solitaire.<br><br>La <em>générosité</em> se compte mal en une seule fois.<br>Elle se partage, par poignées,<br>et <em>distribue sa lumière</em> à tous.`},
+  {slug:"sanguisorbe",nom:"La Sanguisorbe",qualite:"la sobriété intense",poeme:`La sanguisorbe ne fait pas de grandes fleurs,<br>juste de petits boutons d'un rouge sombre, presque noir.<br>Peu de couleur, mais une couleur qui vient de loin.<br><br>C'est une <em>sobriété</em> qui n'est pas froide,<br>celle de qui dit peu<br>et dont <em>chaque mot pèse</em>.`},
+  {slug:"dipsacus",nom:"Le Cardère",qualite:"la rudesse bienveillante",poeme:`Le cardère est tout en piquants,<br>rêche, hérissé, pas franchement accueillant.<br>Et pourtant l'hiver, les oiseaux ne mangent qu'à lui.<br><br>Ne te fie pas aux piquants.<br>Certaines <em>rudesses</em> cachent une bonté<br>qui <em>nourrit ceux qui restent</em>.`}
+];
+
+/* ===================== Logique ===================== */
+const app = document.getElementById('app');
+const state = {slug:null, de:"", pour:"", fromReveal:false};
+
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function bySlug(s){return FLOWERS.find(f=>f.slug===s);}
+function svgOf(f){return f.svg || PLACEHOLDER_SVG;}
+function getParams(){const p=new URLSearchParams(location.search);return {fleur:p.get('fleur'),de:p.get('de')||"",pour:p.get('pour')||""};}
+function setDark(on){document.body.classList.toggle('dark',!!on);}
+
+function show(html){app.innerHTML=html;}
+
+/* --- écran carte (réception) --- */
+function viewReveal(f, de, pour){
+  setDark(false);
+  show(`<div class="view">
+    ${pour?`<p class="pour">Pour ${esc(pour)}</p>`:``}
+    <div class="card">
+      <p class="fleur-nom">Ta fleur</p>
+      <h1 class="fleur-titre">${f.nom}</h1>
+      <div class="fleur-svg">${svgOf(f)}</div>
+      <p class="fleur-texte">${f.poeme}</p>
+    </div>
+    ${de?`<p class="de">— offerte par ${esc(de)}</p>`:``}
+    <div class="actions">
+      <button class="btn" id="toPass">À mon tour d'offrir une fleur</button>
+    </div>
+  </div>`);
+  document.getElementById('toPass').onclick=()=>{state.fromReveal=true;viewPass();};
+}
+
+/* --- écran sombre "passer la balle" --- */
+function viewPass(){
+  setDark(true);
+  show(`<div class="view">
+    <h2 class="h-title">À ton tour<br>d'offrir une fleur.</h2>
+    <p class="h-sub">Pense à quelqu'un qui compte. Choisis la fleur que tu veux lui offrir.</p>
+    <div class="actions"><button class="btn" id="toChoose">Choisir une fleur</button></div>
+  </div>`);
+  document.getElementById('toChoose').onclick=viewChoose;
+}
+
+/* --- accueil (visite directe) --- */
+function viewHome(){
+  setDark(false);
+  show(`<div class="view">
+    <h2 class="h-title">Cette fleur<br>est pour toi.</h2>
+    <p class="h-sub">Choisis une fleur pour quelqu'un qui compte, et offre-lui un mot qui lui ressemble.</p>
+    <div class="actions"><button class="btn" id="toChoose">Offrir une fleur</button></div>
+  </div>`);
+  document.getElementById('toChoose').onclick=viewChoose;
+}
+
+/* --- choisir une fleur + prénoms --- */
+function viewChoose(){
+  setDark(false);
+  const items=FLOWERS.map(f=>`<div class="flower-item${state.slug===f.slug?' sel':''}" data-slug="${f.slug}">
+      <span class="fi-name">${f.nom}</span> &middot; <span class="fi-q">${f.qualite}</span></div>`).join('');
+  show(`<div class="view">
+    <h2 class="h-title" style="font-size:1.6rem">Choisis une fleur</h2>
+    <p class="h-sub">Pour toi, ou pour quelqu'un à qui tu penses.</p>
+    <div class="flower-list" id="list">${items}</div>
+    <div class="field"><label>Ton prénom</label><input id="de" placeholder="Camille" value="${esc(state.de)}"></div>
+    <div class="field"><label>Pour qui ?</label><input id="pour" placeholder="Sylvain" value="${esc(state.pour)}"></div>
+    <div class="actions">
+      <button class="btn" id="gen">Générer le lien</button>
+      <div class="hint" id="hint"></div>
+    </div>
+  </div>`);
+  document.getElementById('list').querySelectorAll('.flower-item').forEach(el=>{
+    el.onclick=()=>{state.slug=el.dataset.slug;
+      document.querySelectorAll('.flower-item').forEach(x=>x.classList.remove('sel'));
+      el.classList.add('sel');};
+  });
+  document.getElementById('gen').onclick=()=>{
+    state.de=document.getElementById('de').value.trim();
+    state.pour=document.getElementById('pour').value.trim();
+    if(!state.slug){document.getElementById('hint').textContent="Choisis d'abord une fleur.";return;}
+    if(!state.pour){document.getElementById('hint').textContent="Indique pour qui c'est.";return;}
+    viewLink();
+  };
+}
+
+/* --- lien généré --- */
+function viewLink(){
+  setDark(false);
+  const f=bySlug(state.slug);
+  const url=`${location.origin}${location.pathname}?fleur=${state.slug}&de=${encodeURIComponent(state.de)}&pour=${encodeURIComponent(state.pour)}`;
+  show(`<div class="view">
+    <p class="pour">Le lien à offrir</p>
+    <h2 class="h-title" style="font-size:1.5rem">Tu offres<br>${f.nom} à ${esc(state.pour)}</h2>
+    <div class="linkbox" id="lk">${esc(url)}</div>
+    <div class="actions">
+      <button class="btn" id="copy">Copier le lien</button>
+      <div class="toast" id="toast"></div>
+      <button class="ghost" id="back">Changer de fleur ou de destinataire</button>
+    </div>
+  </div>`);
+  document.getElementById('copy').onclick=async()=>{
+    try{await navigator.clipboard.writeText(url);}
+    catch(e){const r=document.createRange();r.selectNode(document.getElementById('lk'));
+      window.getSelection().removeAllRanges();window.getSelection().addRange(r);
+      try{document.execCommand('copy');}catch(_){}}
+    document.getElementById('toast').textContent="Lien copié ✓";
+  };
+  document.getElementById('back').onclick=viewChoose;
+}
+
+/* --- routage initial --- */
+function init(){
+  const {fleur,de,pour}=getParams();
+  const f=fleur?bySlug(fleur):null;
+  if(f){state.de=de;state.pour=pour;viewReveal(f,de,pour);}
+  else{viewHome();}
+}
+init();
+</script>
+</body>
+</html>
