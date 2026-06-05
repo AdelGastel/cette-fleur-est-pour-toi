@@ -39,10 +39,12 @@ body.dark{background:var(--ink)}
   text-align:center;box-shadow:0 4px 32px rgba(0,0,0,.04);
 }
 .fleur-nom{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:.5rem}
-.fleur-titre{font-family:'Playfair Display',Georgia,serif;font-size:1.8rem;color:var(--ink);margin:0 0 1.6rem}
-.fleur-svg{margin:0 auto 2rem;min-height:180px;display:flex;align-items:center;justify-content:center}
+.fleur-titre{font-family:'Playfair Display',Georgia,serif;font-size:1.9rem;color:var(--ink);margin:0 0 .4rem}
+.fleur-qualite{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:.95rem;color:#bfae9f;margin:0 0 1.3rem}
+.fleur-sep{width:36px;height:1px;background:#e6d9cc;border:none;margin:0 auto 1.7rem}
 .fleur-texte{font-size:14px;color:var(--muted);line-height:1.9;font-weight:300}
 .fleur-texte em{color:var(--ink);font-style:normal;font-weight:500}
+.preview-card{margin:.3rem auto 1.4rem}
 
 .pour{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:1rem}
 .de{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:.95rem;color:var(--faint);margin-top:1.5rem}
@@ -96,41 +98,8 @@ body.dark .ghost{color:#9a9ab0}
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* ===================== Données ===================== */
-const PLACEHOLDER_SVG = `<svg width="120" height="180" viewBox="0 0 120 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M60 176 C60 176 60 120 60 92" stroke="#7a9e7e" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M60 145 C50 135 32 130 30 117 C42 120 56 130 60 140Z" fill="#9ab89e" stroke="#7a9e7e" stroke-width="1"/>
-  <path d="M60 132 C70 122 88 119 90 106 C78 109 64 119 60 128Z" fill="#9ab89e" stroke="#7a9e7e" stroke-width="1"/>
-  <g transform="translate(60,64)">
-    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1"/>
-    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(60)"/>
-    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(120)"/>
-    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(180)"/>
-    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(240)"/>
-    <ellipse cx="0" cy="-20" rx="10" ry="20" fill="#f2c0cc" stroke="#d4788a" stroke-width="1" transform="rotate(300)"/>
-    <circle r="9" fill="#f7d27f" stroke="#e0b85c" stroke-width="1"/>
-  </g>
-</svg>`;
-
-const TULIPE_SVG = `<svg width="120" height="180" viewBox="0 0 120 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M60 175 C60 175 60 120 60 100" stroke="#7a9e7e" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M60 140 C50 130 30 125 28 112 C40 115 55 125 60 135" fill="#9ab89e" stroke="#7a9e7e" stroke-width="1"/>
-  <path d="M60 128 C70 118 90 115 93 102 C81 106 66 116 60 126" fill="#9ab89e" stroke="#7a9e7e" stroke-width="1"/>
-  <path d="M60 100 C48 95 38 80 40 62 C44 50 52 44 60 44 C60 44 58 72 60 100Z" fill="#e8a0b0" stroke="#d4788a" stroke-width="1"/>
-  <path d="M60 100 C72 95 82 80 80 62 C76 50 68 44 60 44 C60 44 62 72 60 100Z" fill="#e8a0b0" stroke="#d4788a" stroke-width="1"/>
-  <path d="M60 100 C55 85 54 65 60 44 C66 65 65 85 60 100Z" fill="#f0b8c4" stroke="#d4788a" stroke-width=".8"/>
-  <path d="M60 100 C44 92 34 72 38 52 C42 38 52 32 60 34 C60 34 56 68 60 100Z" fill="#f2c0cc" stroke="#d4788a" stroke-width="1"/>
-  <path d="M60 100 C76 92 86 72 82 52 C78 38 68 32 60 34 C60 34 64 68 60 100Z" fill="#f2c0cc" stroke="#d4788a" stroke-width="1"/>
-  <path d="M60 100 C54 82 52 58 60 34 C68 58 66 82 60 100Z" fill="#fad4dc" stroke="#d4788a" stroke-width=".8"/>
-  <line x1="60" y1="80" x2="54" y2="65" stroke="#c06070" stroke-width="1" stroke-linecap="round"/>
-  <line x1="60" y1="80" x2="60" y2="63" stroke="#c06070" stroke-width="1" stroke-linecap="round"/>
-  <line x1="60" y1="80" x2="66" y2="65" stroke="#c06070" stroke-width="1" stroke-linecap="round"/>
-  <circle cx="54" cy="64" r="2" fill="#8b3a4a"/>
-  <circle cx="60" cy="62" r="2" fill="#8b3a4a"/>
-  <circle cx="66" cy="64" r="2" fill="#8b3a4a"/>
-</svg>`;
-
 const FLOWERS = [
-  {slug:"tulipe",nom:"La Tulipe",qualite:"la droiture tranquille",svg:TULIPE_SVG,poeme:`La tulipe ne s'excuse pas de sa droiture.<br>Elle pousse <em>exactement</em> comme elle l'a décidé —<br>ni tordue par le vent, ni courbée par le regard.<br><br>Il y a dans sa façon d'être une <em>élégance tranquille</em>,<br>celle de quelqu'un qui sait qui il est<br>et n'a pas besoin de le prouver.`},
+  {slug:"tulipe",nom:"La Tulipe",qualite:"la droiture tranquille",poeme:`La tulipe ne s'excuse pas de sa droiture.<br>Elle pousse <em>exactement</em> comme elle l'a décidé —<br>ni tordue par le vent, ni courbée par le regard.<br><br>Il y a dans sa façon d'être une <em>élégance tranquille</em>,<br>celle de quelqu'un qui sait qui il est<br>et n'a pas besoin de le prouver.`},
   {slug:"rose",nom:"La Rose",qualite:"la générosité qui s'ignore",poeme:`La rose se donne entière,<br>son parfum part avant qu'elle l'ait décidé.<br>Elle ignore qu'elle est un cadeau — c'est ce qui la rend précieuse.<br><br>Il y a une <em>générosité</em> qui ne se sait pas,<br>celle de qui offre le meilleur<br>sans jamais penser à <em>tendre la main en retour</em>.`},
   {slug:"pivoine",nom:"La Pivoine",qualite:"l'abondance sans ostentation",poeme:`La pivoine est pleine à déborder de pétales,<br>une abondance qu'elle porte sans en faire un drame.<br>Tant de richesse, et pas un geste pour l'exhiber.<br><br>Elle a beaucoup, et le <em>pose là, simplement</em> —<br>car ce qui est vraiment plein<br>n'a <em>pas besoin de paraître</em>.`},
   {slug:"iris",nom:"L'Iris",qualite:"la lucidité",poeme:`L'iris dresse ses pétales comme on ouvre les yeux.<br>Rien ne lui échappe, ni la lumière ni l'ombre —<br>il regarde le monde sans ciller.<br><br>C'est la <em>lucidité</em> :<br>voir les choses exactement telles qu'elles sont<br>et les <em>aimer quand même</em>.`},
@@ -188,7 +157,6 @@ const state = {slug:null, de:"", pour:"", fromReveal:false};
 
 function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function bySlug(s){return FLOWERS.find(f=>f.slug===s);}
-function svgOf(f){return f.svg || PLACEHOLDER_SVG;}
 function getParams(){const p=new URLSearchParams(location.search);return {fleur:p.get('fleur'),de:p.get('de')||"",pour:p.get('pour')||""};}
 function setDark(on){document.body.classList.toggle('dark',!!on);}
 
@@ -202,7 +170,8 @@ function viewReveal(f, de, pour){
     <div class="card">
       <p class="fleur-nom">Ta fleur</p>
       <h1 class="fleur-titre">${f.nom}</h1>
-      <div class="fleur-svg">${svgOf(f)}</div>
+      <p class="fleur-qualite">${f.qualite}</p>
+      <hr class="fleur-sep">
       <p class="fleur-texte">${f.poeme}</p>
     </div>
     ${de?`<p class="de">— offerte par ${esc(de)}</p>`:``}
@@ -242,8 +211,9 @@ function viewChoose(){
       <span class="fi-name">${f.nom}</span> &middot; <span class="fi-q">${f.qualite}</span></div>`).join('');
   show(`<div class="view">
     <h2 class="h-title" style="font-size:1.6rem">Choisis une fleur</h2>
-    <p class="h-sub">Pour toi, ou pour quelqu'un à qui tu penses.</p>
+    <p class="h-sub">Touche une fleur pour lire ce qu'elle dit, puis offre-la.</p>
     <div class="flower-list" id="list">${items}</div>
+    <div id="preview"></div>
     <div class="field"><label>Ton prénom</label><input id="de" placeholder="Camille" value="${esc(state.de)}"></div>
     <div class="field"><label>Pour qui ?</label><input id="pour" placeholder="Sylvain" value="${esc(state.pour)}"></div>
     <div class="actions">
@@ -251,11 +221,26 @@ function viewChoose(){
       <div class="hint" id="hint"></div>
     </div>
   </div>`);
+  function updatePreview(){
+    const f=bySlug(state.slug);
+    const pv=document.getElementById('preview');
+    if(!f){pv.innerHTML='';return;}
+    pv.innerHTML=`<div class="card preview-card">
+      <p class="fleur-nom">Aperçu</p>
+      <h1 class="fleur-titre">${f.nom}</h1>
+      <p class="fleur-qualite">${f.qualite}</p>
+      <hr class="fleur-sep">
+      <p class="fleur-texte">${f.poeme}</p>
+    </div>`;
+  }
   document.getElementById('list').querySelectorAll('.flower-item').forEach(el=>{
     el.onclick=()=>{state.slug=el.dataset.slug;
       document.querySelectorAll('.flower-item').forEach(x=>x.classList.remove('sel'));
-      el.classList.add('sel');};
+      el.classList.add('sel');
+      updatePreview();
+      document.getElementById('preview').scrollIntoView({behavior:'smooth',block:'nearest'});};
   });
+  updatePreview();
   document.getElementById('gen').onclick=()=>{
     state.de=document.getElementById('de').value.trim();
     state.pour=document.getElementById('pour').value.trim();
